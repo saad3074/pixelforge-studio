@@ -20,7 +20,8 @@ class SubmitGeneration implements ShouldQueue
 
     public function __construct(public int $generationId)
     {
-        $this->onQueue('pixelforge');
+        // Use the default queue so `composer run dev` / Cloud workers pick it up
+        // without requiring a separate --queue=pixelforge worker.
     }
 
     public function retryUntil(): \DateTimeInterface
