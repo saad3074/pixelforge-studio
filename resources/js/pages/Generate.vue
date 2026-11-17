@@ -48,7 +48,17 @@ const estimate = computed(() =>
     ),
 );
 
-const canAfford = computed(() => BigInt(props.balance) >= estimate.value.userMax);
+const hasPrompt = computed(() => form.prompt.trim().length > 0);
+const canAfford = computed(() => {
+    try {
+        return BigInt(props.balance ?? 0) >= estimate.value.userMax;
+    } catch {
+        return false;
+    }
+});
+const submitDisabled = computed(
+    () => form.processing || !hasPrompt.value || !canAfford.value,
+);
 
 function addReference() {
     if (form.reference_images.length < 4) {
@@ -162,11 +172,18 @@ function submit() {
                         <p v-if="!canAfford" class="mt-2 text-sm text-destructive">
                             Not enough credits for the maximum estimate. Buy credits first.
                         </p>
+                        <p v-else-if="!hasPrompt" class="mt-2 text-sm text-muted-foreground">
+                            Enter a prompt to enable Generate.
+                        </p>
                     </div>
 
-                    <Button type="submit" :disabled="form.processing || !form.prompt || !canAfford">
+                    <button
+                        type="submit"
+                        class="inline-flex h-9 items-center justify-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground disabled:pointer-events-none disabled:opacity-50"
+                        :disabled="submitDisabled"
+                    >
                         {{ form.processing ? 'Submitting…' : 'Generate' }}
-                    </Button>
+                    </button>
                 </form>
             </div>
         </div>
