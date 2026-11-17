@@ -41,6 +41,16 @@ class SubmitGeneration implements ShouldQueue
             return;
         }
 
+        if (blank(config('services.pixelforge.api_key'))) {
+            $synchronizer->failLocally(
+                $generation,
+                'missing_api_key',
+                'PIXELFORGE_API_KEY is not set on this environment.',
+            );
+
+            return;
+        }
+
         $payload = [
             'prompt' => $generation->prompt,
             'size' => $generation->size,
@@ -64,6 +74,13 @@ class SubmitGeneration implements ShouldQueue
         }
 
         if ($response->isPermanentFailure()) {
+            Log::warning('Pixelforge rejected generation permanently', [
+                'generation_id' => $generation->id,
+                'status' => $response->status,
+                'code' => $response->code(),
+                'message' => $response->message(),
+            ]);
+
             $synchronizer->failLocally(
                 $generation,
                 $response->code() ?? 'provider_rejected',
@@ -86,6 +103,11 @@ class SubmitGeneration implements ShouldQueue
             'body' => $response->body,
         ]);
 
-        $this->release(5);
+        // Unknown non-retryable responses should not spin until MaxAttemptsExceeded.
+        $synchronizer->failLocally(
+            $generation,
+            $response->code() ?? 'provider_error',
+            $response->message() ?? "Unexpected Pixelforge response (HTTP {$response->status}).",
+        );
     }
 }

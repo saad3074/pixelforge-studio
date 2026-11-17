@@ -73,12 +73,18 @@ final class PixelforgeResponse
 
     public function isPermanentFailure(): bool
     {
+        if (in_array($this->status, [400, 401, 403, 404, 422], true)) {
+            return true;
+        }
+
         return in_array($this->code(), [
             'content_policy_violation',
             'validation_failed',
             'daily_limit_exceeded',
             'invalid_api_key',
             'idempotency_key_reused',
+            'authentication_failed',
+            'unauthorized',
         ], true);
     }
 
