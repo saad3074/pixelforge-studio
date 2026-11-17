@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { Head, useForm, usePage } from '@inertiajs/vue3';
-import { computed, ref, watch } from 'vue';
+import { Head, useForm } from '@inertiajs/vue3';
+import { computed } from 'vue';
 import Heading from '@/components/Heading.vue';
 import InputError from '@/components/InputError.vue';
 import { Button } from '@/components/ui/button';
@@ -49,7 +49,6 @@ const estimate = computed(() =>
 );
 
 const canAfford = computed(() => BigInt(props.balance) >= estimate.value.userMax);
-const page = usePage();
 
 function addReference() {
     if (form.reference_images.length < 4) {

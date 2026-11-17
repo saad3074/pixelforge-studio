@@ -3,7 +3,6 @@ import { Head, useForm } from '@inertiajs/vue3';
 import Heading from '@/components/Heading.vue';
 import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/AppLayout.vue';
-import { formatMoney } from '@/lib/pricing';
 import type { BreadcrumbItem } from '@/types';
 
 type Tx = {
