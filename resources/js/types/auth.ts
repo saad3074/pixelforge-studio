@@ -4,9 +4,9 @@ export type User = {
     email: string;
     avatar?: string;
     email_verified_at: string | null;
-    /* @chisel-2fa */
+    credit_balance?: number;
+    is_admin?: boolean;
     two_factor_enabled?: boolean;
-    /* @end-chisel-2fa */
     created_at: string;
     updated_at: string;
     [key: string]: unknown;
