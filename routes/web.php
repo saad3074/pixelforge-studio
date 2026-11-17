@@ -7,8 +7,10 @@ use App\Http\Controllers\PixelforgeWebhookController;
 use App\Http\Middleware\EnsureAdmin;
 use Illuminate\Support\Facades\Route;
 
+// Accept with or without trailing slash — a slash redirect turns POST into GET (405).
 Route::post('/webhooks/pixelforge', PixelforgeWebhookController::class)
     ->name('webhooks.pixelforge');
+Route::post('/webhooks/pixelforge/', PixelforgeWebhookController::class);
 
 Route::get('/', function () {
     return auth()->check()
