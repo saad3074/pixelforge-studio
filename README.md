@@ -54,6 +54,20 @@ php artisan test
 
 ## Deploy notes
 
-- Use a **separate** Pixelforge API key for production; set its webhook URL and `PIXELFORGE_WEBHOOK_SECRET`
-- Run a queue worker and scheduler
-- Leave a few `[succeed]` / `[fail]` / `[duplicate]` generations for reviewers
+1. Make the GitHub repo **public**: https://github.com/saad3074/pixelforge-studio
+2. Deploy anywhere that runs PHP 8.3+ + Postgres (Laravel Cloud, Railway, Fly, Render).
+3. Set env vars from `.env.example`, especially:
+   - `PIXELFORGE_API_KEY` (use a **separate** key for production)
+   - `PIXELFORGE_WEBHOOK_SECRET` (`whsec_…` from the Pixelforge dashboard for that key)
+   - `APP_KEY`, `APP_URL`, `DB_*`
+4. Run a queue worker: `php artisan queue:work --queue=pixelforge,default`
+5. Run the scheduler: `php artisan schedule:work` (or cron `* * * * * php artisan schedule:run`)
+6. Point the production key’s webhook URL to `https://<your-host>/webhooks/pixelforge`
+7. Seed demo user: `php artisan db:seed --force`
+8. Leave a few `[succeed]` / `[fail]` / `[duplicate]` generations for reviewers
+
+A `Dockerfile` is included for Railway/Render-style hosts. For webhooks during local dev, tunnel with ngrok:
+
+```bash
+ngrok http 8000
+```
